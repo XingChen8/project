@@ -1,21 +1,36 @@
 package com.imooc.miaosha.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.imooc.miaosha.domain.User;
+import com.imooc.miaosha.redis.RedisService;
 import com.imooc.miaosha.result.CodeMsg;
 import com.imooc.miaosha.result.Result;
+import com.imooc.miaosha.service.UserService;
 
 @Controller
 public class DemoController {
+	
+
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	RedisService redisService;
+	
+	
 	@RequestMapping("/demo")
 	@ResponseBody
 	String home() {
 		return "hello world";
 		
 	}
+	
+	
 	//1、rest api   2、静态页面
 	@RequestMapping("/helloSuccess")
 	@ResponseBody
@@ -38,5 +53,28 @@ public class DemoController {
 		return "hello";
 //		return new Result(500100,"失效");
 	}
+	
+	@RequestMapping("/db/get")
+	@ResponseBody
+	public Result<User> dbGet() {
+		User user = userService.getById(1);
+		return Result.success(user);
+//		return new Result(500100,"失效");
+	}
+	
+	@RequestMapping("/db/tx")
+	@ResponseBody
+	public Result<Boolean> dbTx(){
+		userService.tx();
+		return Result.success(true);
+	}
+	
+	@RequestMapping("/redis/get")
+	@ResponseBody
+	public Result<Long> redisGet(){
+		Long v1=redisService.get("key1",Long.class);
+		return Result.success(v1);
+	}
+	
 	
 }
